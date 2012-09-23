@@ -1,0 +1,1 @@
+This is a standalone test of the GPS shield's NMEA parsing. It depends on the TinyGPS arduino library.

@@ -1,0 +1,43 @@
+// Some notes on arduino hacking
+
+To build from cmdline on Ubuntu/Debian:
+1)
+<code>
+sudo aptitude install arduino-mk
+</code>
+
+2) Add the following to ~/.bashrc or similar:
+<code>
+export ARDUINO_DIR=/usr/share/arduino
+export ARDMK_DIR=/usr
+export AVR_TOOLS_DIR=/usr
+</code>
+
+3) Change the following line in /usr/share/arduino/Arduino.mk
+From	  "PARSE_BOARD = ard-parse-boards --boards_txt=$(BOARDS_TXT)"
+To 	  "PARSE_BOARD = $(ARDUINO_DIR)/ard-parse-boards --boards_txt=$(BOARDS_TXT)"
+
+4) Add the following (as "Makefile") to the same dir as your code:
+(note: include necessary libs and update BOARD_TAG and ARDUINO_PORT depending on system)
+<code>
+BOARD_TAG    = uno
+ARDUINO_PORT = /dev/ttyACM*
+ARDUINO_LIBS = SPI SoftwareSerial TinyGPS
+include /usr/share/arduino/Arduino.mk
+</code>
+
+5) Run "make" to simply compile code, and "make upload" to compile and push to the board.
+A few notes on this... best results with "make upload" were obtained when the command was
+ executed WHILE reading from the board with pySerial (see point 6 below). Resetting or
+ unplugging the arduino also helped in some cases.
+
+6) Read output from the board with "cat /dev/ttyACM0" (risky), or via pySerial:
+<code>
+sudo aptitude install python-serial
+ipython
+<python>
+import serial
+ser = serial.Serial('/dev/ttyACM0')
+while True:
+    print ser.readline()
+</python></code>
